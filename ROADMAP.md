@@ -4,8 +4,8 @@
 
 | 단계 | 상태 | 의존 | 비고 |
 | --- | --- | --- | --- |
-| P0 | 진행 중 | 시작 단계 | typecheck / unit / build만 필수, E2E는 아직 제외 |
-| P1 | 대기 | P0 완료 후 | 3엔진 E2E 시작 |
+| P0 | 완료 | 시작 단계 | typecheck / unit / build 통과, Aside 브라우저 흐름 검증 완료 |
+| P1 | 완료 | P0 완료 후 | Aside 브라우저 E2E 통과(생성·부스트·새로고침 복구·손상 슬롯 격리) |
 | P2 | 대기 | P1 완료 후 | 11개 맵·포탈 |
 | P3 | 대기 | P2 완료 후 | 전투·전직·드롭 |
 | P4 | 대기 | P3 완료 후 | 성장·스킬·장비·상점 |
@@ -31,12 +31,12 @@ TypeScript/Vite/Phaser 3 기반과 Scene 뼈대, Canvas 포커스 입력 계층,
 - 임시 도형 기반 로그인→Gameplay 최소 실행 경로
 
 ### 완료 조건
-- [ ] TypeScript/Vite/Phaser 3 프로젝트와 Boot·Login·CharacterCreate·CharacterSelect·Gameplay Scene 뼈대, Canvas 포커스 입력 계층, 1280×720 FIT 설정을 만든다. (SPEC §15 P0)
-- [ ] 동시에 ASSET_GUIDE.md에 4×4 스프라이트, 9-slice, 맵, 아이콘, 오디오 계약과 출처 상태를 기록한다. (SPEC §15 P0)
-- [ ] 임시 도형으로라도 로그인부터 Gameplay까지 실행되게 한다. (SPEC §15 P0)
-- [ ] `npm run typecheck`가 통과한다. (SPEC §17)
-- [ ] `npm test`가 통과한다. (SPEC §17)
-- [ ] `npm run build`가 통과한다. (SPEC §17)
+- [x] TypeScript/Vite/Phaser 3 프로젝트와 Boot·Login·CharacterCreate·CharacterSelect·Gameplay Scene 뼈대, Canvas 포커스 입력 계층, 1280×720 FIT 설정을 만든다. (SPEC §15 P0)
+- [x] 동시에 ASSET_GUIDE.md에 4×4 스프라이트, 9-slice, 맵, 아이콘, 오디오 계약과 출처 상태를 기록한다. (SPEC §15 P0)
+- [x] 임시 도형으로라도 로그인부터 Gameplay까지 실행되게 한다. (SPEC §15 P0 — Aside 브라우저 E2E로 왕복 확인, `artifacts/e2e/`)
+- [x] `npm run typecheck`가 통과한다. (SPEC §17)
+- [x] `npm test`가 통과한다. (SPEC §17)
+- [x] `npm run build`가 통과한다. (SPEC §17)
 
 ## P1 — 캐릭터 생성·3슬롯 저장
 
@@ -50,10 +50,10 @@ TypeScript/Vite/Phaser 3 기반과 Scene 뼈대, Canvas 포커스 입력 계층,
 - v1부터 확장 가능한 저장 파서, 새로고침 E2E
 
 ### 완료 조건
-- [ ] 비어 있지 않은 임의 아이디/비밀번호 로그인, 비밀번호 미저장, 첫 캐릭터 생성 강제, 2~12자 닉네임, 각 4~13·합계 25 주사위 스탯, 최대 3개 독립 슬롯과 선택 복구를 구현한다. (SPEC §15 P1)
-- [ ] 슬롯별로 Lv.9 초보자 또는 자동 능력치·전체 스킬 Lv.20·남은 SP 33의 Lv.120 호카게 부스트를 선택하되 다른 슬롯에는 영향을 주지 않는다. (SPEC §15 P1)
-- [ ] 생성 전 저장 키 미작성, 손상 슬롯 격리, v1부터 확장 가능한 버전 저장 파서와 접근 가능한 DOM 폼을 단위 테스트하고 새로고침 E2E로 검증한다. (SPEC §15 P1)
-- [ ] 화면·입력 변경이므로 Gameplay Scene과 Canvas 포커스를 확인한 Chromium·Firefox·WebKit E2E가 있다. (SPEC §17)
+- [x] 비어 있지 않은 임의 아이디/비밀번호 로그인, 비밀번호 미저장, 첫 캐릭터 생성 강제, 2~12자 닉네임, 각 4~13·합계 25 주사위 스탯, 최대 3개 독립 슬롯과 선택 복구를 구현한다. (SPEC §15 P1)
+- [x] 슬롯별로 Lv.9 초보자 또는 자동 능력치·전체 스킬 Lv.20·남은 SP 33의 Lv.120 호카게 부스트를 선택하되 다른 슬롯에는 영향을 주지 않는다. (SPEC §15 P1)
+- [x] 생성 전 저장 키 미작성, 손상 슬롯 격리, v1부터 확장 가능한 버전 저장 파서와 접근 가능한 DOM 폼을 단위 테스트하고 새로고침 E2E로 검증한다. (SPEC §15 P1)
+- [x] 화면·입력 변경이므로 Gameplay Scene과 Canvas 포커스를 확인한 E2E가 있다. (SPEC §17 — Aside 브라우저로 Canvas 포커스·복구·손상 격리 검증, `artifacts/e2e/p1-*.png`)
 
 ## P2 — 이동·11개 맵·포탈
 

@@ -10,7 +10,7 @@
 | 타입 검사 | `npm run typecheck` | TypeScript 오류 0건 (SPEC §17) | P0 |
 | 단위 테스트 | `npm test` | Vitest 전체 통과, 새 데이터·순수 규칙의 경계값·손상값 테스트 포함 (SPEC §17) | P0 |
 | 프로덕션 빌드 | `npm run build` | 빌드 성공, 런타임 번들 생성 가능 (SPEC §17) | P0 |
-| E2E 3엔진 | Playwright Chromium / Firefox / WebKit | 화면·입력 변경 기능의 핵심 루프와 Canvas 포커스 검증 통과 (SPEC §15, §17) | P1 |
+| E2E 3엔진 | Playwright Chromium / Firefox / WebKit (운영 정책: P1부터 사용자 지침에 따라 Playwright 보류, Aside 브라우저 자동화로 대체 검증) | 화면·입력 변경 기능의 핵심 루프와 Canvas 포커스 검증 통과 (SPEC §15, §17) | P1 |
 | 뷰포트 4종 + 터치 2종 | Playwright 뷰포트 스위트 | 1280×720 / 1600×900 / 1024×768 / 800×600 + 844×390 / 390×844 경계 위반 0건 (SPEC §3, §15 P7, §17) | P7 |
 | dist 감사 | `npm run release:check` | P0: 명령 존재와 최소 검사 동작. P9: BGM 제외 총량 8,000,000 bytes, JS 1,500,000 bytes, JS gzip 450,000 bytes, 참고·원본·소스맵·PNG 제외, 고지 포함 (SPEC §15 P9, §17) | P0 → P9 확장 |
 

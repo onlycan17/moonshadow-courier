@@ -32,10 +32,10 @@ npm run release:check
 
 | 항목 | 상태 |
 | --- | --- |
-| 단계 | P0 스캐폴드 |
+| 단계 | P1 완료(로그인·3슬롯 캐릭터 생성·선택 복구) |
 | 문서 기준 | `docs/SPEC.md` 단일 기준 |
 | 에셋 | 임시 도형 대체, 계약 문서만 확정 |
-| 자동화 | typecheck / test / build 우선, E2E는 P1 예정 |
+| 자동화 | typecheck / test / build 통과, E2E는 Aside 브라우저 운영(Playwright 보류) |
 
 ## 문서 안내
 
