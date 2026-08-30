@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { createOverlayPanel, openDomOverlay } from '../ui/dom-overlay';
-import { paintScene } from './shared';
+import { nextSceneAfterLogin } from '../ui/flow-rules';
+import { clearGameplayDataset, createProfileRepository, paintScene } from './shared';
 
 export class LoginScene extends Phaser.Scene {
   public constructor() {
@@ -8,10 +9,14 @@ export class LoginScene extends Phaser.Scene {
   }
 
   public create(): void {
-    paintScene(this, '로그인', '임시 접근 폼으로 다음 화면 흐름을 검증합니다.');
-    const { panel, body } = createOverlayPanel('임시 로그인');
+    clearGameplayDataset();
+    paintScene(this, '로그인', '아이디와 비밀번호를 입력하면 저장된 캐릭터 흐름으로 이어집니다.');
+
+    const repository = createProfileRepository();
+    const { panel, body } = createOverlayPanel('로그인');
     const form = document.createElement('form');
     form.className = 'overlay-form';
+    form.noValidate = true;
 
     const idInput = createField('아이디', 'text', 'username');
     const passwordInput = createField('비밀번호', 'password', 'current-password');
@@ -36,8 +41,9 @@ export class LoginScene extends Phaser.Scene {
         return;
       }
 
+      const nextScene = nextSceneAfterLogin(repository.hasAnyProfile());
       close();
-      this.scene.start('CharacterCreate');
+      this.scene.start(nextScene);
     });
   }
 }
