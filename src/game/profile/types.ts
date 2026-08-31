@@ -33,6 +33,18 @@ export interface StoredCharacterV1 {
   mapId: string;
 }
 
+export interface MapPosition {
+  x: number;
+  y: number;
+}
+
+export type StoredCharacterV2 = Omit<StoredCharacterV1, 'version'> & {
+  version: 2;
+  positions: Record<string, MapPosition>;
+};
+
+export const CURRENT_PROFILE_VERSION = 2;
+
 export type SlotNumber = 1 | 2 | 3;
 
 /** 테스트 가능한 저장을 위한 최소 Key/Value 경계(SPEC §10 저장 파서 규칙). */

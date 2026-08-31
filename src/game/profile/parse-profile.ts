@@ -1,6 +1,7 @@
-import type { CharacterStats, JobId, StoredCharacterV1 } from './types';
+import { runMigrations } from './migrations';
+import { CURRENT_PROFILE_VERSION } from './types';
+import type { CharacterStats, JobId, MapPosition, StoredCharacterV2 } from './types';
 
-const PROFILE_VERSION = 1;
 const NICKNAME_MAX_LENGTH = 50;
 const MIN_LEVEL = 1;
 const MAX_LEVEL = 200;
@@ -10,8 +11,10 @@ const MIN_STAT = 4;
 const MAX_STAT = 9999;
 const MIN_SKILL_LEVEL = 0;
 const MAX_SKILL_LEVEL = 20;
+const MIN_POSITION = 0;
+const MAX_POSITION = 99999;
 
-export function parseStoredCharacter(raw: string): StoredCharacterV1 | null {
+export function parseStoredCharacter(raw: string): StoredCharacterV2 | null {
   const parsed = parseJson(raw);
   if (!isRecord(parsed)) {
     return null;
@@ -29,8 +32,15 @@ function parseJson(raw: string): unknown {
   }
 }
 
-function parseStoredCharacterRecord(record: Record<string, unknown>): StoredCharacterV1 | null {
+function parseStoredCharacterRecord(record: Record<string, unknown>): StoredCharacterV2 | null {
   const version = readVersion(record.version);
+  if (version === 1) {
+    return runMigrations(record);
+  }
+  if (version !== CURRENT_PROFILE_VERSION) {
+    return null;
+  }
+
   const nickname = readNickname(record.nickname);
   const job = readJob(record.job);
   const level = readLevel(record.level);
@@ -43,7 +53,7 @@ function parseStoredCharacterRecord(record: Record<string, unknown>): StoredChar
   const mesos = readNonNegative(record.mesos);
   const mapId = readRequiredString(record.mapId);
 
-  if (version === null || nickname === null || job === null || level === null) {
+  if (nickname === null || job === null || level === null) {
     return null;
   }
   if (resources === null || stats === null || ap === null || sp === null) {
@@ -53,10 +63,24 @@ function parseStoredCharacterRecord(record: Record<string, unknown>): StoredChar
     return null;
   }
 
-  return { ...resources, version, nickname, job, level, stats, ap, sp, autoDistribute, skills, mesos, mapId };
+  return {
+    ...resources,
+    version,
+    nickname,
+    job,
+    level,
+    stats,
+    ap,
+    sp,
+    autoDistribute,
+    skills,
+    mesos,
+    mapId,
+    positions: readPositions(record.positions)
+  };
 }
 
-function readResources(record: Record<string, unknown>): Pick<StoredCharacterV1, 'hp' | 'maxHp' | 'mp' | 'maxMp' | 'exp'> | null {
+function readResources(record: Record<string, unknown>): Pick<StoredCharacterV2, 'hp' | 'maxHp' | 'mp' | 'maxMp' | 'exp'> | null {
   const maxHp = readSafeIntegerInRange(record.maxHp, MIN_MAX_RESOURCE, Number.MAX_SAFE_INTEGER);
   const maxMp = readSafeIntegerInRange(record.maxMp, MIN_MAX_RESOURCE, Number.MAX_SAFE_INTEGER);
   if (maxHp === null || maxMp === null) {
@@ -103,8 +127,11 @@ function readBoolean(value: unknown): boolean | null {
   return typeof value === 'boolean' ? value : null;
 }
 
-function readVersion(value: unknown): 1 | null {
-  return value === PROFILE_VERSION ? PROFILE_VERSION : null;
+function readVersion(value: unknown): 1 | typeof CURRENT_PROFILE_VERSION | null {
+  if (value === 1 || value === CURRENT_PROFILE_VERSION) {
+    return value;
+  }
+  return null;
 }
 
 function readLevel(value: unknown): number | null {
@@ -154,4 +181,43 @@ function readSkills(value: unknown): Record<string, number> | null {
     skills[key] = parsedLevel;
   }
   return skills;
+}
+
+function readPositions(value: unknown): Record<string, MapPosition> {
+  if (!isPlainObject(value)) {
+    return {};
+  }
+
+  const positions: Record<string, MapPosition> = {};
+  for (const [mapId, positionValue] of Object.entries(value)) {
+    if (mapId.length === 0) {
+      continue;
+    }
+
+    const position = readMapPosition(positionValue);
+    if (position === null) {
+      continue;
+    }
+    positions[mapId] = position;
+  }
+  return positions;
+}
+
+function readMapPosition(value: unknown): MapPosition | null {
+  if (!isPlainObject(value)) {
+    return null;
+  }
+
+  const x = readSafeIntegerInRange(value.x, MIN_POSITION, MAX_POSITION);
+  const y = readSafeIntegerInRange(value.y, MIN_POSITION, MAX_POSITION);
+  return x === null || y === null ? null : { x, y };
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
 }
