@@ -17,6 +17,6 @@ describe('P0 scaffold config', () => {
   });
 
   it('registers scenes in the required order', () => {
-    expect(GAME_SCENE_KEYS).toEqual(['Boot', 'Login', 'CharacterCreate', 'CharacterSelect', 'Gameplay']);
+    expect(GAME_SCENE_KEYS).toEqual(['Boot', 'Intro', 'Login', 'CharacterCreate', 'CharacterSelect', 'Gameplay']);
   });
 });

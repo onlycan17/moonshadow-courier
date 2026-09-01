@@ -1,0 +1,28 @@
+{
+  "task_id": "42dd8c28-6d38-422d-8075-75713d555858",
+  "type": "text_to_model",
+  "status": "success",
+  "input": {
+    "pbr": true,
+    "prompt": "original forgotten clockwork technician zombie for a side-scrolling fantasy action RPG, shambling undead mechanic in torn olive work coat, brass monocle device, small gear backpack and heavy boots, non-gory, readable side silhouette, centered full body, no text, no symbols, no logo, no recognizable franchise imagery",
+    "texture": true,
+    "export_uv": true,
+    "face_limit": 3000,
+    "model_version": "P1-20260311",
+    "texture_alignment": "geometry"
+  },
+  "output_fields": [
+    "model_url",
+    "rendered_image_url",
+    "generated_image_url"
+  ],
+  "credits_consumed": 40,
+  "created_at": "2026-08-31T18:55:56.258696Z",
+  "completed_at": "2026-08-31T18:57:00.918478Z",
+  "files": [
+    "model.glb",
+    "rendered_image.webp",
+    "generated_image.jpeg",
+    "preview.png"
+  ]
+}

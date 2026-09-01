@@ -1,0 +1,28 @@
+{
+  "task_id": "087282a0-b8df-4e35-af39-6765532f6691",
+  "type": "text_to_model",
+  "status": "success",
+  "input": {
+    "pbr": true,
+    "prompt": "original companion pet Dua for a side-scrolling night fantasy action RPG, tiny friendly quadruped spirit animal combining a round mint fox pup and soft moth-like ears, teal body, cream muzzle, small luminous cyan tail tuft, no wings, charming readable silhouette, centered full body, no text, no symbols, no logo, no recognizable franchise imagery",
+    "texture": true,
+    "export_uv": true,
+    "face_limit": 2500,
+    "model_version": "P1-20260311",
+    "texture_alignment": "geometry"
+  },
+  "output_fields": [
+    "model_url",
+    "rendered_image_url",
+    "generated_image_url"
+  ],
+  "credits_consumed": 40,
+  "created_at": "2026-08-31T19:08:00.922033Z",
+  "completed_at": "2026-08-31T19:08:59.905160Z",
+  "files": [
+    "model.glb",
+    "rendered_image.webp",
+    "generated_image.jpeg",
+    "preview.png"
+  ]
+}

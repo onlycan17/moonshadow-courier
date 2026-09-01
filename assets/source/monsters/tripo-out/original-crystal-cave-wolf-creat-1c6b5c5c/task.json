@@ -1,0 +1,28 @@
+{
+  "task_id": "1c6b5c5c-b0f3-44d2-a57b-6f305a057d07",
+  "type": "text_to_model",
+  "status": "success",
+  "input": {
+    "pbr": true,
+    "prompt": "original crystal cave wolf creature for a side-scrolling fantasy action RPG, agile quadruped wolf with translucent cyan crystal plates growing along shoulders and tail, dark indigo fur, alert predatory pose, readable side silhouette, centered full body, no text, no symbols, no logo, no recognizable franchise imagery",
+    "texture": true,
+    "export_uv": true,
+    "face_limit": 3000,
+    "model_version": "P1-20260311",
+    "texture_alignment": "geometry"
+  },
+  "output_fields": [
+    "model_url",
+    "rendered_image_url",
+    "generated_image_url"
+  ],
+  "credits_consumed": 40,
+  "created_at": "2026-08-31T18:54:26.790301Z",
+  "completed_at": "2026-08-31T18:55:20.598596Z",
+  "files": [
+    "model.glb",
+    "rendered_image.webp",
+    "generated_image.jpeg",
+    "preview.png"
+  ]
+}

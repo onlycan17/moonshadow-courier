@@ -5,6 +5,12 @@ const GAME_SHELL_ID = 'game-shell';
 const GAME_STAGE_ID = 'game-stage';
 const DOM_OVERLAY_ID = 'game-dom-overlay';
 
+const TOUCH_KEY_BINDINGS = [
+  ['←', 'ArrowLeft', 'ArrowLeft'], ['→', 'ArrowRight', 'ArrowRight'], ['↓', 'ArrowDown', 'ArrowDown'],
+  ['이동', 'ArrowUp', 'ArrowUp'], ['점프', 'Alt', 'AltLeft'], ['줍기', 'z', 'KeyZ'], ['공격', 'Control', 'ControlLeft'],
+  ['기술1', '1', 'Digit1'], ['기술2', '2', 'Digit2'], ['기술3', '3', 'Digit3'], ['기술4', '4', 'Digit4'], ['MENU', 'Escape', 'Escape'],
+] as const;
+
 export function ensureGameShell(): HTMLElement {
   const appRoot = document.getElementById(APP_ROOT_ID);
   if (!(appRoot instanceof HTMLElement)) {
@@ -29,9 +35,35 @@ export function ensureGameShell(): HTMLElement {
   overlay.className = 'game-dom-overlay';
   overlay.setAttribute('aria-live', 'polite');
 
-  shell.append(stage, overlay);
+  const touchControls = document.createElement('nav');
+  touchControls.className = 'touch-controls';
+  touchControls.setAttribute('aria-label', '터치 게임 조작');
+  for (const [label, key, code] of TOUCH_KEY_BINDINGS) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'touch-control-button';
+    button.textContent = label;
+    const release = (event: PointerEvent) => { event.preventDefault(); dispatchTouchKey('keyup', key, code); };
+    button.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      document.querySelector<HTMLCanvasElement>('canvas')?.focus();
+      dispatchTouchKey('keydown', key, code);
+    });
+    button.addEventListener('pointerup', release);
+    button.addEventListener('pointercancel', release);
+    touchControls.append(button);
+  }
+
+  shell.append(stage, touchControls, overlay);
   appRoot.replaceChildren(shell);
   return shell;
+}
+
+function dispatchTouchKey(type: 'keydown' | 'keyup', key: string, code: string): void {
+  const keyCodes: Record<string, number> = { ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, AltLeft: 18, ControlLeft: 17, KeyZ: 90, Digit1: 49, Digit2: 50, Digit3: 51, Digit4: 52, Escape: 27 };
+  const event = new KeyboardEvent(type, { key, code, bubbles: true, cancelable: true });
+  Object.defineProperty(event, 'keyCode', { value: keyCodes[code] ?? 0 });
+  window.dispatchEvent(event);
 }
 
 export function getGameStageId(): string {
@@ -73,10 +105,15 @@ export function createOverlayPanel(title: string): { panel: HTMLElement; body: H
   return { panel, body };
 }
 
-export function openDomOverlay(scene: Phaser.Scene, panel: HTMLElement): () => void {
+export interface DomOverlayOptions {
+  backdropClassName?: string;
+}
+
+export function openDomOverlay(scene: Phaser.Scene, panel: HTMLElement, options: DomOverlayOptions = {}): () => void {
   const overlayRoot = getOverlayRoot();
   const wrapper = document.createElement('div');
   wrapper.className = 'overlay-backdrop';
+  if (options.backdropClassName !== undefined) wrapper.classList.add(options.backdropClassName);
   wrapper.appendChild(panel);
   overlayRoot.replaceChildren(wrapper);
   setCanvasEnabled(scene, false);

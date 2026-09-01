@@ -117,7 +117,7 @@ function readNickname(value: unknown): string | null {
 }
 
 function readJob(value: unknown): JobId | null {
-  if (value === 'novice' || value === 'hokage') {
+  if (value === 'novice' || value === 'rogue' || value === 'assassin' || value === 'hermit' || value === 'hokage') {
     return value;
   }
   return null;

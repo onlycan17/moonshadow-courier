@@ -1,5 +1,6 @@
 import type { SlotNumber } from './types';
 
+// 기존 플레이어의 캐릭터가 사라지지 않도록 제품명 변경 뒤에도 레거시 저장 namespace를 유지한다.
 export const PROFILE_SLOT_1_KEY = 'kerning-shadows.local-profile.v1';
 export const PROFILE_SLOT_2_KEY = 'kerning-shadows.local-profile.v1.slot-2';
 export const PROFILE_SLOT_3_KEY = 'kerning-shadows.local-profile.v1.slot-3';

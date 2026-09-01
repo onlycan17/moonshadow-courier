@@ -16,6 +16,7 @@ describe('player runtime', () => {
     const getIntent = vi.fn<() => PlayerIntent>(() => ({
       horizontal: 1,
       jumpPressed: false,
+      attackPressed: false,
       downHeld: false,
       upHeld: false
     }));
@@ -47,6 +48,7 @@ describe('player runtime', () => {
       getIntent: () => ({
         horizontal: 0,
         jumpPressed: true,
+        attackPressed: false,
         downHeld: true,
         upHeld: false
       }),
@@ -59,6 +61,66 @@ describe('player runtime', () => {
     expect(result.ignoreOneWayUntilMs).toBe(500);
     expect(body.velocity.y).toBe(1);
     expect(result.movementState).toBe('fall');
+  });
+
+  it('holds the attack state for its fixed window and then returns to idle', () => {
+    const body = createFakeBody({ blockedDown: true });
+    const attackResult = runPlayerStepWithIntent({
+      body,
+      map: SHADOW_TESTING_GROUND,
+      getIntent: () => ({
+        horizontal: 0,
+        jumpPressed: false,
+        attackPressed: true,
+        downHeld: false,
+        upHeld: false
+      }),
+      dtSeconds: 1 / 60,
+      nowMs: 100,
+      runtime: createInitialRuntimeState()
+    });
+
+    expect(attackResult.movementState).toBe('attack');
+    expect(attackResult.attackUntilMs).toBe(460);
+
+    const idleResult = runPlayerStepWithIntent({
+      body,
+      map: SHADOW_TESTING_GROUND,
+      getIntent: () => ({
+        horizontal: 0,
+        jumpPressed: false,
+        attackPressed: false,
+        downHeld: false,
+        upHeld: false
+      }),
+      dtSeconds: 1 / 60,
+      nowMs: 461,
+      runtime: attackResult
+    });
+
+    expect(idleResult.movementState).toBe('idle');
+    expect(idleResult.attackUntilMs).toBe(0);
+  });
+
+  it('gives a grounded jump priority over an attack pressed on the same frame', () => {
+    const body = createFakeBody({ blockedDown: true });
+    const result = runPlayerStepWithIntent({
+      body,
+      map: SHADOW_TESTING_GROUND,
+      getIntent: () => ({
+        horizontal: 0,
+        jumpPressed: true,
+        attackPressed: true,
+        downHeld: false,
+        upHeld: false
+      }),
+      dtSeconds: 1 / 60,
+      nowMs: 100,
+      runtime: createInitialRuntimeState()
+    });
+
+    expect(result.movementState).toBe('jump');
+    expect(result.attackUntilMs).toBe(0);
   });
 });
 

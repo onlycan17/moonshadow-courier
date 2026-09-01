@@ -1,0 +1,28 @@
+{
+  "task_id": "eef4b8bb-7df5-48ee-9cfe-b314740e1041",
+  "type": "text_to_model",
+  "status": "success",
+  "input": {
+    "pbr": true,
+    "prompt": "original lunar archive sage boss Lunasion for a side-scrolling arcane fantasy action RPG, tall nonhuman owl-like scholar wrapped in layered midnight robes, crescent glass halo floating behind head, violet crystal staff integrated into one arm, pale blue luminous eyes, original elegant threatening silhouette, centered full body, no text, no letters, no logo, no recognizable franchise imagery",
+    "texture": true,
+    "export_uv": true,
+    "face_limit": 4000,
+    "model_version": "P1-20260311",
+    "texture_alignment": "geometry"
+  },
+  "output_fields": [
+    "model_url",
+    "rendered_image_url",
+    "generated_image_url"
+  ],
+  "credits_consumed": 40,
+  "created_at": "2026-08-31T19:04:58.442160Z",
+  "completed_at": "2026-08-31T19:05:53.762736Z",
+  "files": [
+    "model.glb",
+    "rendered_image.webp",
+    "generated_image.jpeg",
+    "preview.png"
+  ]
+}

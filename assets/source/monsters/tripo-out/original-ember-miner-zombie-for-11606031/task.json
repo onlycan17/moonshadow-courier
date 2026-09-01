@@ -1,0 +1,28 @@
+{
+  "task_id": "11606031-119f-4c79-b712-43086ac2ef13",
+  "type": "text_to_model",
+  "status": "success",
+  "input": {
+    "pbr": true,
+    "prompt": "original ember miner zombie for a side-scrolling volcanic mine action RPG, broad undead miner in charred leather apron, cracked ember helmet lamp, basalt shoulder plates, glowing orange seams, heavy pick-hammer strapped to back, non-gory, readable side silhouette, centered full body, no text, no symbols, no logo, no recognizable franchise imagery",
+    "texture": true,
+    "export_uv": true,
+    "face_limit": 3000,
+    "model_version": "P1-20260311",
+    "texture_alignment": "geometry"
+  },
+  "output_fields": [
+    "model_url",
+    "rendered_image_url",
+    "generated_image_url"
+  ],
+  "credits_consumed": 40,
+  "created_at": "2026-08-31T19:00:26.862479Z",
+  "completed_at": "2026-08-31T19:01:33.285144Z",
+  "files": [
+    "model.glb",
+    "rendered_image.webp",
+    "generated_image.jpeg",
+    "preview.png"
+  ]
+}

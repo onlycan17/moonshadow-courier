@@ -1,12 +1,14 @@
 import { classifyVertical, type HorizontalInput, type VerticalMotion } from './movement-rules';
 
-export type PlayerState = 'idle' | 'walk' | 'jump' | 'fall' | 'hurt' | 'climb';
+export type PlayerState = 'idle' | 'walk' | 'jump' | 'fall' | 'attack' | 'skill' | 'hurt' | 'climb';
 
 export interface PlayerStateFlags {
   onGround: boolean;
   vy: number;
   horizontalInput: HorizontalInput;
   climbing: boolean;
+  attacking: boolean;
+  skilling?: boolean;
 }
 
 export function nextState(current: PlayerState, flags: PlayerStateFlags): PlayerState {
@@ -16,6 +18,14 @@ export function nextState(current: PlayerState, flags: PlayerStateFlags): Player
 
   if (flags.climbing) {
     return 'climb';
+  }
+
+  if (flags.skilling) {
+    return 'skill';
+  }
+
+  if (flags.attacking) {
+    return 'attack';
   }
 
   if (!flags.onGround) {

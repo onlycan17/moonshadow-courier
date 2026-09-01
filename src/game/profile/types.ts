@@ -4,7 +4,7 @@
  * 필드 추가는 마이그레이션(프로필 버전 상승)과 함께만 허용한다.
  */
 
-export type JobId = "novice" | "hokage";
+export type JobId = 'novice' | 'rogue' | 'assassin' | 'hermit' | 'hokage';
 
 export interface CharacterStats {
   str: number;

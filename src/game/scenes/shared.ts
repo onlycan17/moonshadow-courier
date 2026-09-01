@@ -65,12 +65,40 @@ export function createProfileRepository(): ProfileRepository {
   return new ProfileRepository(new LocalStorageStore());
 }
 
+/**
+ * 게임 상태와 동기화하는 `body[data-*]` 키 목록 (SPEC §5.3).
+ * E2E는 이 속성으로 화면·위치·임시 객체 수명을 확인하므로 이름은 여기서만 관리한다.
+ */
+export const GAMEPLAY_DATASET_KEYS = Object.freeze({
+  activeNickname: "activeNickname",
+  activeLevel: "activeLevel",
+  currentMap: "currentMap",
+  playerX: "playerX",
+  playerY: "playerY",
+  playerState: "playerState",
+  mapObjects: "mapObjects",
+  mapBodies: "mapBodies",
+  mapColliders: "mapColliders",
+  mapTimers: "mapTimers",
+  mapTweens: "mapTweens",
+  portalAsset: "portalAsset",
+  backgroundAsset: "backgroundAsset",
+  playerAsset: "playerAsset",
+  playerHp: "playerHp",
+  playerMp: "playerMp",
+  playerExp: "playerExp",
+  playerMesos: "playerMesos",
+  enemyCount: "enemyCount",
+  enemyAlive: "enemyAlive",
+  drops: "drops",
+  transformed: "transformed",
+  lastCombatEvent: "lastCombatEvent",
+});
+
 export function clearGameplayDataset(): void {
-  delete document.body.dataset.activeNickname;
-  delete document.body.dataset.activeLevel;
-  delete document.body.dataset.currentMap;
-  delete document.body.dataset.playerX;
-  delete document.body.dataset.playerY;
+  for (const datasetKey of Object.values(GAMEPLAY_DATASET_KEYS)) {
+    delete document.body.dataset[datasetKey];
+  }
 }
 
 export function getSlotStates(

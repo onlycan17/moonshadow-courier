@@ -3,6 +3,7 @@ import { BootScene } from './scenes/Boot';
 import { CharacterCreateScene } from './scenes/CharacterCreate';
 import { CharacterSelectScene } from './scenes/CharacterSelect';
 import { GameplayScene } from './scenes/Gameplay';
+import { IntroScene } from './scenes/Intro';
 import { LoginScene } from './scenes/Login';
 import { getGameStageId } from './ui/dom-overlay';
 
@@ -10,7 +11,7 @@ export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
 export const GAME_GRAVITY_Y = 1250;
 export const GAME_PIXEL_ART = true;
-export const GAME_SCENE_KEYS = ['Boot', 'Login', 'CharacterCreate', 'CharacterSelect', 'Gameplay'] as const;
+export const GAME_SCENE_KEYS = ['Boot', 'Intro', 'Login', 'CharacterCreate', 'CharacterSelect', 'Gameplay'] as const;
 
 export const GAME_CONFIG: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -33,5 +34,5 @@ export const GAME_CONFIG: Phaser.Types.Core.GameConfig = {
     width: GAME_WIDTH,
     height: GAME_HEIGHT
   },
-  scene: [BootScene, LoginScene, CharacterCreateScene, CharacterSelectScene, GameplayScene]
+  scene: [BootScene, IntroScene, LoginScene, CharacterCreateScene, CharacterSelectScene, GameplayScene]
 };

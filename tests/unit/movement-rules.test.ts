@@ -81,36 +81,72 @@ describe('movement rules', () => {
 describe('player states', () => {
   it('keeps hurt externally forced', () => {
     expectState(
-      nextState('hurt', { onGround: true, vy: 0, horizontalInput: 1, climbing: false }),
+      nextState('hurt', {
+        onGround: true,
+        vy: 0,
+        horizontalInput: 1,
+        climbing: false,
+        attacking: false
+      }),
       'hurt'
     );
   });
 
   it('prioritizes climbing over all other movement states', () => {
     expectState(
-      nextState('walk', { onGround: false, vy: -300, horizontalInput: 1, climbing: true }),
+      nextState('walk', {
+        onGround: false,
+        vy: -300,
+        horizontalInput: 1,
+        climbing: true,
+        attacking: false
+      }),
       'climb'
     );
   });
 
   it('uses jump while rising and switches to fall at apex threshold', () => {
     expectState(
-      nextState('jump', { onGround: false, vy: -100, horizontalInput: 0, climbing: false }),
+      nextState('jump', {
+        onGround: false,
+        vy: -100,
+        horizontalInput: 0,
+        climbing: false,
+        attacking: false
+      }),
       'jump'
     );
     expectState(
-      nextState('jump', { onGround: false, vy: APEX_VERTICAL_THRESHOLD, horizontalInput: 0, climbing: false }),
+      nextState('jump', {
+        onGround: false,
+        vy: APEX_VERTICAL_THRESHOLD,
+        horizontalInput: 0,
+        climbing: false,
+        attacking: false
+      }),
       'fall'
     );
   });
 
   it('returns walk or idle while grounded', () => {
     expectState(
-      nextState('fall', { onGround: true, vy: 200, horizontalInput: 1, climbing: false }),
+      nextState('fall', {
+        onGround: true,
+        vy: 200,
+        horizontalInput: 1,
+        climbing: false,
+        attacking: false
+      }),
       'walk'
     );
     expectState(
-      nextState('walk', { onGround: true, vy: 0, horizontalInput: 0, climbing: false }),
+      nextState('walk', {
+        onGround: true,
+        vy: 0,
+        horizontalInput: 0,
+        climbing: false,
+        attacking: false
+      }),
       'idle'
     );
   });

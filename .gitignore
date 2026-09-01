@@ -4,3 +4,7 @@ dist/
 *.local
 artifacts/
 .playwright-mcp/
+.playwright-cli/
+.tripo/
+coverage/
+output/
