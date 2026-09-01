@@ -16,6 +16,20 @@ const EXPECTED_SIZES: Record<MapId, { width: number; height: number }> = {
   'endurance-forest': { width: 1920, height: 1440 }
 };
 
+const EXPECTED_VISUAL_GROUND_Y: Record<MapId, number> = {
+  'cuning-city': 600,
+  'bandit-hideout': 600,
+  'green-mushroom-cave': 600,
+  'shadow-testing-ground': 600,
+  'crystal-ant-cave': 600,
+  'clockwork-tower': 600,
+  'sunken-coral-temple': 600,
+  'ember-mine': 600,
+  'moonlight-library': 600,
+  'infinite-arena': 600,
+  'endurance-forest': 1380
+};
+
 function reachableSurfaceYs(map: MapDef): number[] {
   const uniquePlatformYs = [...new Set(map.platforms.filter((platform) => platform.oneWay).map((platform) => platform.y))].sort(
     (left, right) => right - left
@@ -34,6 +48,24 @@ describe('map registry', () => {
   it('stores the exact P2 world sizes', () => {
     for (const mapId of MAP_IDS) {
       expect(getMap(mapId)).toMatchObject(EXPECTED_SIZES[mapId]);
+    }
+  });
+
+  it('aligns each map ground with the walkable surface painted in its background', () => {
+    for (const mapId of MAP_IDS) {
+      expect(getMap(mapId).groundY, mapId).toBe(EXPECTED_VISUAL_GROUND_Y[mapId]);
+    }
+  });
+
+  it('places default spawns and portals on a registered walkable surface', () => {
+    for (const mapId of MAP_IDS) {
+      const map = getMap(mapId);
+      const surfaceYs = new Set([map.groundY, ...map.platforms.map((platform) => platform.y)]);
+
+      expect(surfaceYs.has(map.defaultSpawn.y), `${mapId}:defaultSpawn`).toBe(true);
+      for (const portal of map.portals) {
+        expect(surfaceYs.has(portal.y), `${mapId}:${portal.id}`).toBe(true);
+      }
     }
   });
 
@@ -78,6 +110,28 @@ describe('map registry', () => {
         }
 
         expect(currentSurface - nextSurface).toBeLessThanOrEqual(130);
+      }
+    }
+  });
+
+  it('keeps enough clearance between the ground and the lowest platform', () => {
+    for (const mapId of MAP_IDS) {
+      const map = getMap(mapId);
+      if (map.platforms.length === 0) continue;
+
+      const lowestPlatformY = Math.max(...map.platforms.map((platform) => platform.y));
+      expect(map.groundY - lowestPlatformY, mapId).toBeGreaterThanOrEqual(90);
+    }
+  });
+
+  it('ends each rope on a registered platform surface', () => {
+    for (const mapId of MAP_IDS) {
+      const map = getMap(mapId);
+      if (map.height !== 720) continue;
+      const platformYs = new Set(map.platforms.map((platform) => platform.y));
+
+      for (const rope of map.ropes) {
+        expect(platformYs.has(rope.bottomY), `${mapId}:${rope.id}`).toBe(true);
       }
     }
   });

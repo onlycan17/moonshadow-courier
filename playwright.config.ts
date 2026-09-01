@@ -7,6 +7,10 @@ const PREVIEW_URL = `http://127.0.0.1:${PREVIEW_PORT}`;
 export default defineConfig({
   testDir: './tests/e2e',
   outputDir: './artifacts/e2e-run',
+  timeout: process.env.CI ? 90_000 : 30_000,
+  expect: {
+    timeout: process.env.CI ? 15_000 : 5_000
+  },
   fullyParallel: false,
   workers: 1,
   retries: process.env.CI ? 1 : 0,

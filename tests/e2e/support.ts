@@ -3,8 +3,12 @@ import { expect, type Page } from '@playwright/test';
 export const CORRUPT_SLOT_KEY = 'kerning-shadows.local-profile.v1.slot-3';
 export const STORED_PROFILE_KEY = 'kerning-shadows.local-profile.v1';
 
-const READY_TIMEOUT_MS = 20_000;
-const WALK_TIMEOUT_MS = 15_000;
+export const RUNNING_IN_CI = (globalThis as typeof globalThis & {
+  process?: { env?: Record<string, string | undefined> };
+}).process?.env?.CI === 'true';
+
+const READY_TIMEOUT_MS = RUNNING_IN_CI ? 60_000 : 20_000;
+const WALK_TIMEOUT_MS = RUNNING_IN_CI ? 45_000 : 15_000;
 const POSITION_SAVE_WAIT_MS = 900;
 const RUNTIME_STATS_SETTLE_MS = 600;
 
@@ -28,6 +32,8 @@ export function attachErrorGuards(page: Page): string[] {
   });
 
   page.on('pageerror', (error) => {
+    // WebKit은 reload가 취소한 로컬 이미지 요청을 pageerror/CORS 오류로 보고한다.
+    if (isCancelledLocalAssetLoad(error.message)) return;
     problems.push(`pageerror: ${error.message}`);
   });
 
@@ -35,11 +41,15 @@ export function attachErrorGuards(page: Page): string[] {
     const failure = request.failure();
     const errorText = failure?.errorText ?? 'unknown';
     // reload/goto가 이전 문서의 진행 중 요청을 취소하는 것은 실제 로드 실패가 아니다.
-    if (errorText === 'NS_BINDING_ABORTED' || errorText === 'net::ERR_ABORTED' || errorText === 'cancelled') return;
+    if (errorText === 'NS_BINDING_ABORTED' || errorText === 'net::ERR_ABORTED' || errorText.toLowerCase().includes('cancelled')) return;
     problems.push(`requestfailed: ${request.url()} (${errorText})`);
   });
 
   return problems;
+}
+
+function isCancelledLocalAssetLoad(message: string): boolean {
+  return /^\/127\.0\.0\.1:\d+\/assets\/.+ due to access control checks\.$/.test(message);
 }
 
 export async function openIntroPage(page: Page, navigate = true): Promise<void> {
@@ -75,14 +85,14 @@ export async function createCharacter(page: Page, nickname: string): Promise<voi
   await submit.click();
 }
 
-export async function enterGameplay(page: Page, slot: number): Promise<void> {
+export async function enterGameplay(page: Page, slot: number, expectedMap = 'cuning-city'): Promise<void> {
   const panel = page.getByRole('dialog', { name: '캐릭터 선택' });
   await expect(panel).toBeVisible({ timeout: READY_TIMEOUT_MS });
 
   await panel.locator(`[data-slot-index="${slot}"]`).click();
   await panel.getByRole('button', { name: '진입' }).click();
 
-  await waitForMap(page, 'cuning-city');
+  await waitForMap(page, expectedMap);
   await expect(page.locator('canvas')).toBeFocused({ timeout: READY_TIMEOUT_MS });
 }
 
@@ -128,26 +138,24 @@ export function readActiveLevel(page: Page): Promise<string | undefined> {
 
 /** 포탈 중심 좌표까지 걸어간 뒤 방향키를 놓는다. 화면 타이밍 대신 data-player-x로 판단한다. */
 export async function walkUntilX(page: Page, targetX: number, direction: 'left' | 'right'): Promise<void> {
-  const key = direction === 'right' ? 'ArrowRight' : 'ArrowLeft';
-  await page.keyboard.down(key);
+  const deadline = Date.now() + WALK_TIMEOUT_MS;
+  let moveDirection = direction;
 
-  try {
-    await page.waitForFunction(
-      ({ target, move }) => {
-        const raw = document.body.dataset.playerX;
-        if (raw === undefined) {
-          return false;
-        }
+  while (Date.now() < deadline) {
+    const currentX = await readPlayerX(page);
+    const distance = targetX - currentX;
+    if (Math.abs(distance) <= 12) return;
 
-        const x = Number(raw);
-        return move === 'right' ? x >= target : x <= target;
-      },
-      { target: targetX, move: direction },
-      { timeout: WALK_TIMEOUT_MS }
-    );
-  } finally {
+    moveDirection = distance > 0 ? 'right' : 'left';
+    const key = moveDirection === 'right' ? 'ArrowRight' : 'ArrowLeft';
+    const burstMs = Math.abs(distance) > 120 ? 180 : 70;
+    await page.keyboard.down(key);
+    await page.waitForTimeout(burstMs);
     await page.keyboard.up(key);
+    await page.waitForTimeout(70);
   }
+
+  throw new Error(`Timed out walking ${moveDirection} toward x=${targetX}`);
 }
 
 /** `↑` 상호작용. 엔진이 JustDown으로 읽을 수 있도록 down/up 사이에 간격을 둔다(SPEC §6.2). */

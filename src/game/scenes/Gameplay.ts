@@ -45,6 +45,7 @@ import { focusGameCanvas } from "../ui/dom-overlay";
 import { openGameplayPanel, type GameplayPanelKind } from '../ui/gameplay-menus';
 import { openEndingCredits } from '../ui/ending-credits';
 import { ProceduralGameAudio } from '../audio/procedural-audio';
+import { resolveMusicMode } from '../audio/music-rules';
 import { getMonsterVisualAsset } from '../assets/monster-assets';
 import { DUA_PET_ASSET } from '../assets/pet-assets';
 import { getSkillIconAsset } from '../assets/skill-icon-assets';
@@ -230,6 +231,7 @@ export class GameplayScene extends Phaser.Scene {
       return;
     }
     this.profileExtension = loadRuntimeProfileExtension(this.activeSlot, this.character.mesos);
+    this.audio.startMusic('exploration');
 
     this.gameplayInput = createGameplayInput(
       this,
@@ -514,7 +516,7 @@ export class GameplayScene extends Phaser.Scene {
       });
     }
 
-    this.spawnEnemies(runtime, map.id);
+    this.spawnEnemies(runtime, map);
     this.createCombatHud(runtime);
 
     const positionSaveTimer = this.time.addEvent({
@@ -689,11 +691,11 @@ export class GameplayScene extends Phaser.Scene {
     this.spawnSkillProjectiles(runtime, 'basic-shuriken', this.transformed ? 62 : definition.baseDamage, Math.max(1, this.character.skills['basic-shuriken'] ?? 0), definition.usesWeapon, definition.projectileCount, definition.maxTargets, x, y, direction);
   }
 
-  private spawnEnemies(runtime: MapRuntime, mapId: MapId): void {
+  private spawnEnemies(runtime: MapRuntime, map: MapDef): void {
     const activeExam = this.profileExtension?.quests.jobExam;
-    const spawns: readonly MonsterSpawn[] = mapId === 'shadow-testing-ground' && activeExam?.status === 'active' && activeExam.job === 'novice'
-      ? [420, 570, 720, 870, 1020].map((x, index) => ({ id: `exam-mushroom-${index + 1}`, monsterId: 'green-mushroom' as const, x, y: 660, patrolRadius: 55 }))
-      : getMonsterSpawns(mapId);
+    const spawns: readonly MonsterSpawn[] = map.id === 'shadow-testing-ground' && activeExam?.status === 'active' && activeExam.job === 'novice'
+      ? [420, 570, 720, 870, 1020].map((x, index) => ({ id: `exam-mushroom-${index + 1}`, monsterId: 'green-mushroom' as const, x, y: map.groundY, patrolRadius: 55 }))
+      : getMonsterSpawns(map.id);
     for (const spawn of spawns) {
       const definition = getMonster(spawn.monsterId);
       const visualAsset = getMonsterVisualAsset(definition.id);
@@ -1160,7 +1162,7 @@ export class GameplayScene extends Phaser.Scene {
     };
     gameplayWindow.render_game_to_text = () => JSON.stringify({
       coordinateSystem: 'origin top-left, x right, y down',
-      map: this.currentMap === null ? null : { id: this.currentMap.id, width: this.currentMap.width, height: this.currentMap.height },
+      map: this.currentMap === null ? null : { id: this.currentMap.id, width: this.currentMap.width, height: this.currentMap.height, groundY: this.currentMap.groundY },
       background: this.currentMap === null ? null : { width: this.currentMap.width, height: this.currentMap.height, followsCamera: true },
       camera: { scrollX: Math.round(this.cameras.main.scrollX), scrollY: Math.round(this.cameras.main.scrollY), playfieldBottom: HUD_TOP },
       player: this.player === null || this.character === null ? null : { x: Math.round(this.player.x), y: Math.round(this.player.y), state: this.player.getState(), hp: this.character.hp, mp: this.character.mp, level: this.character.level, job: this.character.job, transformed: this.transformed },
@@ -1169,7 +1171,12 @@ export class GameplayScene extends Phaser.Scene {
         activeProjectiles: this.mapRuntime?.projectiles.length ?? 0,
         activeScreenAccents: this.mapRuntime?.objects.filter((object) => object.name === 'skill-screen-accent').length ?? 0,
       },
-      enemies: this.mapRuntime?.enemies.map((enemy) => ({ id: enemy.spawn.id, type: enemy.definition.id, x: Math.round(enemy.body.x), y: Math.round(enemy.body.y), hp: enemy.hp, alive: enemy.alive })) ?? [],
+      audio: {
+        musicMode: this.audio.getMusicMode(),
+        musicActive: this.audio.isMusicActive(),
+      },
+      enemies: this.mapRuntime?.enemies.map((enemy) => ({ id: enemy.spawn.id, type: enemy.definition.id, x: Math.round(enemy.body.x), y: Math.round(enemy.body.y), groundY: enemy.spawn.y, hp: enemy.hp, alive: enemy.alive })) ?? [],
+      portals: this.mapRuntime?.portalRuntimes.map((portal) => ({ id: portal.definition.id, x: Math.round(portal.definition.x + portal.definition.width / 2), groundY: portal.definition.y })) ?? [],
       drops: this.mapRuntime?.drops.map((drop) => ({ id: drop.id, x: Math.round(drop.object.x), y: Math.round(drop.object.y), mesos: drop.mesos })) ?? [],
       pet: this.mapRuntime?.pet === null || this.mapRuntime?.pet === undefined ? null : {
         x: Math.round(this.mapRuntime.pet.state.x),
@@ -1409,6 +1416,8 @@ export class GameplayScene extends Phaser.Scene {
     if (this.character === null || this.mapRuntime === null || this.hudStatusText === null || this.bossStatusText === null) return;
     this.hudStatusText.setText(`HP ${this.character.hp.toLocaleString()} / ${this.character.maxHp.toLocaleString()}   MP ${this.character.mp.toLocaleString()} / ${this.character.maxMp.toLocaleString()}   EXP ${this.character.exp.toLocaleString()} / ${getRequiredExperience(this.character.level).toLocaleString()}   메소 ${this.character.mesos.toLocaleString()}${this.transformed ? '   [구미호 변신]' : ''}`);
     const boss = this.mapRuntime.enemies.find((enemy) => enemy.definition.boss && enemy.alive);
+    this.audio.setMusicMode(resolveMusicMode(boss !== undefined));
+    this.audio.syncSettings();
     this.bossStatusText.setText(boss === undefined ? '' : `${boss.definition.label}  ${boss.hp.toLocaleString()} / ${boss.definition.hp.toLocaleString()}`);
     if (this.minimapPlayerMarker !== null && this.player !== null && this.currentMap !== null) this.minimapPlayerMarker.x = 1073 + this.player.x / this.currentMap.width * 174;
     if (this.questStatusText !== null && this.profileExtension !== null) {

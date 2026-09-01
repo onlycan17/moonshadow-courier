@@ -1,4 +1,5 @@
 import type { MapId } from '../maps/types';
+import { STANDARD_GROUND_Y } from '../maps/map-registry';
 
 export type MonsterId =
   | 'green-mushroom'
@@ -82,23 +83,23 @@ function spawnLine(prefix: string, monsterId: MonsterId, xs: readonly number[], 
 const SPAWNS: Readonly<Record<MapId, readonly MonsterSpawn[]>> = Object.freeze({
   'cuning-city': [],
   'bandit-hideout': [],
-  'green-mushroom-cave': spawnLine('mushroom', 'green-mushroom', [520, 850, 1180, 1480], 660, 100),
+  'green-mushroom-cave': spawnLine('mushroom', 'green-mushroom', [520, 850, 1180, 1480], STANDARD_GROUND_Y, 100),
   'shadow-testing-ground': [
-    ...spawnLine('sentinel', 'shadow-sentinel', [430, 690, 930], 660, 80),
-    spawn('trial-golem', 'abyss-golem', 1110, 660, 60)
+    ...spawnLine('sentinel', 'shadow-sentinel', [430, 690, 930], STANDARD_GROUND_Y, 80),
+    spawn('trial-golem', 'abyss-golem', 1110, STANDARD_GROUND_Y, 60)
   ],
-  'crystal-ant-cave': spawnLine('crystal-wolf', 'crystal-wolf', [480, 800, 1160, 1500], 660, 120),
-  'clockwork-tower': spawnLine('zombie', 'forgotten-zombie', [480, 790, 1150, 1500], 660, 90),
-  'sunken-coral-temple': spawnLine('mangrove', 'coral-mangrove', [480, 790, 1140, 1490], 660, 70),
+  'crystal-ant-cave': spawnLine('crystal-wolf', 'crystal-wolf', [480, 800, 1160, 1500], STANDARD_GROUND_Y, 120),
+  'clockwork-tower': spawnLine('zombie', 'forgotten-zombie', [480, 790, 1150, 1500], STANDARD_GROUND_Y, 90),
+  'sunken-coral-temple': spawnLine('mangrove', 'coral-mangrove', [480, 790, 1140, 1490], STANDARD_GROUND_Y, 70),
   'ember-mine': [
-    ...spawnLine('ember-zombie', 'ember-zombie', [460, 760, 1050, 1320], 660, 80),
-    spawn('boss-ignikar', 'ignikar', 1600, 660, 70)
+    ...spawnLine('ember-zombie', 'ember-zombie', [460, 760, 1050, 1320], STANDARD_GROUND_Y, 80),
+    spawn('boss-ignikar', 'ignikar', 1600, STANDARD_GROUND_Y, 70)
   ],
   'moonlight-library': [
-    ...spawnLine('moon-wolf', 'moonlight-wolf', [460, 760, 1050, 1320], 660, 110),
-    spawn('boss-lunasion', 'lunasion', 1600, 660, 70)
+    ...spawnLine('moon-wolf', 'moonlight-wolf', [460, 760, 1050, 1320], STANDARD_GROUND_Y, 110),
+    spawn('boss-lunasion', 'lunasion', 1600, STANDARD_GROUND_Y, 70)
   ],
-  'infinite-arena': [spawn('boss-one-punch', 'one-punch-guardian', 1500, 660, 160)],
+  'infinite-arena': [spawn('boss-one-punch', 'one-punch-guardian', 1500, STANDARD_GROUND_Y, 160)],
   'endurance-forest': []
 });
 

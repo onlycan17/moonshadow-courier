@@ -20,6 +20,7 @@
 | `src/game/assets/monsters/*-tripo-v1.webp`<br>`src/game/assets/pets/dua-tripo-v1.webp` | OpenAI Codex + Tripo | 몬스터 10종과 동료 두아의 Tripo text-to-3D 작업 11건; 작업 ID·프롬프트·비용·원본 폴더는 `assets/source-records/generated-combat-assets-v1.md` | GLB 생성과 함께 제공된 512×512 투명 WebP 렌더를 사람 검수 후 런타임 파생본으로 선별 | Tripo 서비스 약관 §3.2(2026-09-01 확인), 독자 프롬프트, 특정 작품·캐릭터·작가 미지정 | 런타임 WebP만 `dist/` 포함. GLB·생성 참고 이미지·작업 JSON은 제외. 공개 배포 전 약관·유사성 재검토 |
 | `src/game/assets/skills/*-icon-v1.webp` | OpenAI Codex + OpenAI ImageGen | 텍스트 없는 오리지널 4×4 기술 아이콘 아틀라스; 원본·프롬프트·해시는 `assets/source-records/generated-combat-assets-v1.md` | 원본 셀 15개 크롭 → 128×128 Lanczos → lossless exact WebP | OpenAI 이용약관 Content 조항(2026-09-01 확인), 특정 작품·캐릭터·작가 미지정, 사람 검수 완료 | 런타임 WebP 15개만 `dist/` 포함. 생성 원본은 제외 |
 | `src/game/assets/ui/credits-background-v1.webp` | OpenAI Codex + OpenAI ImageGen | 텍스트 없는 오리지널 결말 풍경; 원본·프롬프트·해시는 `assets/source-records/generated-combat-assets-v1.md` | 1,672×941 원본 → 1,280×720 중앙 스케일·크롭 → WebP 품질 88 | OpenAI 이용약관 Content 조항(2026-09-01 확인), 특정 작품·캐릭터·작가 미지정, 사람 검수 완료 | 런타임 WebP만 `dist/` 포함. 생성 원본은 제외 |
+| `src/game/audio/music-rules.ts`<br>`src/game/audio/procedural-audio.ts` | OpenAI Codex | 독자적으로 작성한 32스텝 일반·보스 음계 패턴과 Web Audio 합성 코드. 외부 음원·샘플·멜로디를 입력으로 사용하지 않음 | MIDI 음높이 수치 → 런타임 오실레이터 리드·베이스·패드·킥 합성. 별도 오디오 파일 없음 | 프로젝트 자체 제작 코드이며 제3자 음원이나 샘플 라이선스 의존 없음 | 소스 코드와 런타임 JS만 배포. 파일 기반 BGM으로 교체 시 해당 음원의 별도 권리 기록 필요 |
 
 ## 작성 규칙
 

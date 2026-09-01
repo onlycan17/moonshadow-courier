@@ -16,7 +16,7 @@ export const MAP_LABELS_KO = Object.freeze({
 
 export const MAP_PORTAL_WIDTH = 56;
 export const MAP_PORTAL_HEIGHT = 96;
-export const STANDARD_GROUND_Y = 660;
+export const STANDARD_GROUND_Y = 600;
 export const ENDURANCE_FOREST_GROUND_Y = 1380;
 
 function platform(id: string, x: number, y: number, width: number, oneWay = true): PlatformDef {
@@ -100,10 +100,10 @@ const mapDefs = {
     height: 720,
     groundY: STANDARD_GROUND_Y,
     platforms: [
-      platform('lower-west', 180, 560, 320),
-      platform('lower-east', 1220, 560, 340),
-      platform('middle-center', 710, 450, 420),
-      platform('upper-center', 860, 340, 260)
+      platform('lower-west', 180, 500, 320),
+      platform('lower-east', 1220, 500, 340),
+      platform('middle-center', 710, 390, 420),
+      platform('upper-center', 860, 280, 260)
     ],
     ropes: [],
     portals: [
@@ -119,8 +119,8 @@ const mapDefs = {
     width: 1280,
     height: 720,
     groundY: STANDARD_GROUND_Y,
-    platforms: [platform('trial-perch', 500, 540, 300)],
-    ropes: [rope('trial-rope', 650, 300, 540)],
+    platforms: [platform('trial-perch', 500, 480, 300)],
+    ropes: [rope('trial-rope', 650, 240, 480)],
     portals: [portal('to-bandit-hideout', 160, STANDARD_GROUND_Y, 'bandit-hideout', 'to-shadow-testing-ground', '아지트 귀환 포탈')],
     defaultSpawn: { x: 260, y: STANDARD_GROUND_Y },
     recommendedLevel: null
@@ -131,12 +131,12 @@ const mapDefs = {
     height: 720,
     groundY: STANDARD_GROUND_Y,
     platforms: [
-      platform('lower-west', 180, 560, 340),
-      platform('lower-east', 1260, 560, 320),
-      platform('middle-center', 780, 450, 360),
-      platform('upper-right', 1180, 340, 260)
+      platform('lower-west', 180, 500, 340),
+      platform('lower-east', 1260, 500, 320),
+      platform('middle-center', 780, 390, 360),
+      platform('upper-right', 1180, 280, 260)
     ],
-    ropes: [rope('main-rope', 960, 320, 560)],
+    ropes: [rope('main-rope', 960, 260, 500)],
     portals: [
       portal('to-green-mushroom-cave', 200, STANDARD_GROUND_Y, 'green-mushroom-cave', 'to-crystal-ant-cave', '버섯굴 포탈'),
       portal('to-clockwork-tower', 1560, STANDARD_GROUND_Y, 'clockwork-tower', 'to-crystal-ant-cave', '탑 포탈')
@@ -150,12 +150,12 @@ const mapDefs = {
     height: 720,
     groundY: STANDARD_GROUND_Y,
     platforms: [
-      platform('lower-west', 240, 560, 300),
-      platform('lower-east', 1300, 560, 300),
-      platform('middle-center', 820, 450, 320),
-      platform('upper-left', 520, 340, 260)
+      platform('lower-west', 240, 500, 300),
+      platform('lower-east', 1300, 500, 300),
+      platform('middle-center', 820, 390, 320),
+      platform('upper-left', 520, 280, 260)
     ],
-    ropes: [rope('tower-rope', 980, 320, 560)],
+    ropes: [rope('tower-rope', 980, 260, 500)],
     portals: [
       portal('to-crystal-ant-cave', 200, STANDARD_GROUND_Y, 'crystal-ant-cave', 'to-clockwork-tower', '개미굴 포탈'),
       portal('to-sunken-coral-temple', 1580, STANDARD_GROUND_Y, 'sunken-coral-temple', 'to-clockwork-tower', '산호 신전 포탈')
@@ -169,12 +169,12 @@ const mapDefs = {
     height: 720,
     groundY: STANDARD_GROUND_Y,
     platforms: [
-      platform('lower-west', 200, 560, 320),
-      platform('lower-east', 1320, 560, 300),
-      platform('middle-center', 780, 450, 360),
-      platform('upper-right', 1220, 340, 260)
+      platform('lower-west', 200, 500, 320),
+      platform('lower-east', 1320, 500, 300),
+      platform('middle-center', 780, 390, 360),
+      platform('upper-right', 1220, 280, 260)
     ],
-    ropes: [rope('coral-rope', 960, 320, 560)],
+    ropes: [rope('coral-rope', 960, 260, 500)],
     portals: [
       portal('to-clockwork-tower', 200, STANDARD_GROUND_Y, 'clockwork-tower', 'to-sunken-coral-temple', '시계탑 포탈'),
       portal('to-ember-mine', 1580, STANDARD_GROUND_Y, 'ember-mine', 'to-sunken-coral-temple', '광산 포탈')
@@ -188,11 +188,11 @@ const mapDefs = {
     height: 720,
     groundY: STANDARD_GROUND_Y,
     platforms: [
-      platform('lower-west', 220, 560, 340),
-      platform('middle-center', 860, 450, 320),
-      platform('upper-right', 1300, 340, 280)
+      platform('lower-west', 220, 500, 340),
+      platform('middle-center', 860, 390, 320),
+      platform('upper-right', 1300, 280, 280)
     ],
-    ropes: [rope('mine-rope', 1020, 320, 560)],
+    ropes: [rope('mine-rope', 1020, 260, 500)],
     portals: [
       portal('to-sunken-coral-temple', 220, STANDARD_GROUND_Y, 'sunken-coral-temple', 'to-ember-mine', '산호 신전 포탈'),
       portal('to-moonlight-library', 1560, STANDARD_GROUND_Y, 'moonlight-library', 'to-ember-mine', '서고 회랑 포탈')
@@ -206,11 +206,11 @@ const mapDefs = {
     height: 720,
     groundY: STANDARD_GROUND_Y,
     platforms: [
-      platform('lower-west', 240, 560, 300),
-      platform('middle-center', 840, 450, 340),
-      platform('upper-right', 1300, 340, 280)
+      platform('lower-west', 240, 500, 300),
+      platform('middle-center', 840, 390, 340),
+      platform('upper-right', 1300, 280, 280)
     ],
-    ropes: [rope('library-rope', 1010, 320, 560)],
+    ropes: [rope('library-rope', 1010, 260, 500)],
     portals: [
       portal('to-ember-mine', 220, STANDARD_GROUND_Y, 'ember-mine', 'to-moonlight-library', '광산 포탈'),
       portal('to-cuning-city', 820, STANDARD_GROUND_Y, 'cuning-city', 'to-moonlight-library', '도시 포탈'),
@@ -227,11 +227,11 @@ const mapDefs = {
     height: 720,
     groundY: STANDARD_GROUND_Y,
     platforms: [
-      platform('lower-left', 180, 540, 220),
-      platform('lower-center', 600, 540, 240),
-      platform('lower-right', 1040, 540, 240),
-      platform('upper-left', 360, 430, 220),
-      platform('upper-right', 1260, 430, 220)
+      platform('lower-left', 180, 480, 220),
+      platform('lower-center', 600, 480, 240),
+      platform('lower-right', 1040, 480, 240),
+      platform('upper-left', 360, 370, 220),
+      platform('upper-right', 1260, 370, 220)
     ],
     ropes: [],
     portals: [portal('to-cuning-city', 940, STANDARD_GROUND_Y, 'cuning-city', 'to-moonlight-library', '귀환 포탈')],
