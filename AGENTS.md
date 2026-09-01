@@ -18,6 +18,7 @@
 - `npm run typecheck`
 - `npm test`
 - `npm run build`
+- `npm run test:e2e`
 - `npm run release:check`
 
 근거: SPEC §3.
@@ -122,6 +123,7 @@ scripts/
 ## 단계 완료 기준 메모
 
 - P0: `npm run typecheck` / `npm test` / `npm run build`
-- P1부터: Chromium·Firefox·WebKit E2E 포함
+- P1부터: Chromium·Firefox·WebKit E2E 포함(`npm run test:e2e`)
+- P2부터: `npm run release:check`가 JS 1,500,000 bytes / JS gzip 450,000 bytes / BGM 제외 총량 8,000,000 bytes 예산을 조기 강제
 - P7부터: 1280×720 / 1600×900 / 1024×768 / 800×600 / 844×390 / 390×844 검증 강화
 - P9: `npm run release:check`에 BGM 제외 총량 8,000,000 bytes / JS 1,500,000 bytes / JS gzip 450,000 bytes 감사 포함

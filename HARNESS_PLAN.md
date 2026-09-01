@@ -10,9 +10,9 @@
 | 타입 검사 | `npm run typecheck` | TypeScript 오류 0건 (SPEC §17) | P0 |
 | 단위 테스트 | `npm test` | Vitest 전체 통과, 새 데이터·순수 규칙의 경계값·손상값 테스트 포함 (SPEC §17) | P0 |
 | 프로덕션 빌드 | `npm run build` | 빌드 성공, 런타임 번들 생성 가능 (SPEC §17) | P0 |
-| E2E 3엔진 | Playwright Chromium / Firefox / WebKit (운영 정책: P1부터 사용자 지침에 따라 Playwright 보류, Aside 브라우저 자동화로 대체 검증) | 화면·입력 변경 기능의 핵심 루프와 Canvas 포커스 검증 통과 (SPEC §15, §17) | P1 |
+| E2E 3엔진 | `npm run test:e2e` (Playwright Chromium / Firefox / WebKit, `playwright.config.ts`) | 프로덕션 preview에서 로그인→생성→선택→Gameplay 핵심 루프와 Canvas 포커스, 포탈 왕복 뒤 임시 객체 수 기준 복귀, 새로고침 위치 복구, 손상 슬롯 격리, console·pageerror·requestfailed 0건 통과 (SPEC §15, §17) | P1(현재 운영. 최초 1회 `npx playwright install`) |
 | 뷰포트 4종 + 터치 2종 | Playwright 뷰포트 스위트 | 1280×720 / 1600×900 / 1024×768 / 800×600 + 844×390 / 390×844 경계 위반 0건 (SPEC §3, §15 P7, §17) | P7 |
-| dist 감사 | `npm run release:check` | P0: 명령 존재와 최소 검사 동작. P9: BGM 제외 총량 8,000,000 bytes, JS 1,500,000 bytes, JS gzip 450,000 bytes, 참고·원본·소스맵·PNG 제외, 고지 포함 (SPEC §15 P9, §17) | P0 → P9 확장 |
+| dist 감사 | `npm run release:check` | 매 실행: BGM 제외 총량 8,000,000 bytes / JS 1,500,000 bytes / JS gzip 450,000 bytes 예산과 금지 형식(소스맵·PNG 등) 위반 0건. `npm run release:check -- --release`는 `ASSET_CREDITS.md`와 제3자 고지·라이선스 동봉까지 확인한다 (SPEC §15 P9, §17) | P0 최소 → P2부터 예산 게이트 조기 적용, P9에 `--release` 확장 |
 
 ## 게이트별 의미와 사각지대
 
@@ -21,7 +21,8 @@
 | 타입 검사 | 인터페이스 불일치, 누락 반환, 잘못된 타입 연결을 빠르게 차단한다. | 게임 감각, 실제 입력 흐름, 오디오 체감 품질은 증명하지 못한다. |
 | 단위 테스트 | 순수 규칙의 경계값·손상값·마이그레이션·상태 머신 회귀를 재현 가능하게 잡는다. | Phaser 런타임 수명주기, 실제 Scene 전환, 브라우저 포커스는 별도 확인이 필요하다. |
 | 프로덕션 빌드 | 배포 번들이 실제로 조립 가능한지 확인한다. | 지원 브라우저 호환성, 프레임 유지, 실제 스피커 출력은 보장하지 못한다. |
-| E2E 3엔진 | 로그인→생성→선택→Gameplay 또는 해당 단계 핵심 루프가 Chromium·Firefox·WebKit에서 같은 계약으로 동작함을 보인다. | 실제 Windows/macOS 최신 브라우저 체감, 장시간 플레이, 기기별 오디오 정책 차이는 남는다(SPEC §3, §17). |
+| E2E 3엔진 | 로그인→생성→선택→Gameplay 또는 해당 단계 핵심 루프가 Chromium·Firefox·WebKit에서 같은 계약으로 동작함을 보인다. `body[data-map-*]` 카운터로 전환 뒤 객체 수명도 함께 확인한다. | 실제 Windows/macOS 최신 브라우저 체감, 장시간 플레이, 기기별 오디오 정책 차이는 남는다(SPEC §3, §17). |
+| 런타임 카운터 | `data-map-objects`·`map-bodies`·`map-colliders`·`map-tweens`는 Phaser 라이브 컬렉션(디스플레이 리스트, 월드 바디, 활성 콜라이더 큐, 트윈)을 읽어 Scene 유지 중에 누적되는 임시 객체를 잡는다. | Scene 재시작 시 Phaser가 씬 소유 객체를 자체 정리하므로 전환 중 누수는 구조적으로 작다. 타이머는 타입으로 노출된 라이브 목록이 없어 `data-map-timers`에 현재 맵 등록 개수를 기록한다(SPEC §6.3). |
 | 뷰포트 4종 + 터치 2종 | HUD, 팝업, safe-area, `100dvh`, 터치 조작 배치가 규격 화면에서 유지됨을 보인다. | 실제 손가락 조작성, 브라우저 주소창 변화, 기기별 safe-area 차이는 실기 확인이 필요하다. |
 | dist 감사 | 배포 산출물에 필요한 파일만 있고, 예산·고지·제외 규칙을 지키는지 확인한다. | 픽셀 동일성의 시각 검토, 라이선스 해석, 실제 다운로드 체감은 별도 점검이 필요하다. |
 
@@ -37,7 +38,7 @@
 
 1. P0 게이트는 `typecheck` / `test` / `build`만 필수다. E2E 3엔진은 P1부터 시작한다(SPEC §15, §17).
 2. 화면·입력 변경 단계는 Gameplay Scene과 Canvas 포커스를 확인하는 E2E를 반드시 추가한다(SPEC §17).
-3. 맵·이펙트 변경 단계는 전환 뒤 sprite / timer / tween / collider / projectile 수가 기준으로 돌아오는지를 확인한다(SPEC §17).
+3. 맵·이펙트 변경 단계는 `body[data-map-*]` 카운터로 전환 뒤 sprite / timer / tween / collider / projectile 수가 기준으로 돌아오는지를 E2E에서 확인한다(SPEC §17).
 4. 큰 단계가 끝나면 `AGENTS.md`, `README.md`, `ROADMAP.md`, 관련 QA·에셋 문서를 함께 갱신한다(SPEC §17).
 
 ## 실패 프로토콜
