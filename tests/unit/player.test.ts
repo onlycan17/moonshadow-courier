@@ -36,9 +36,11 @@ describe('player runtime', () => {
   });
 
   it('marks exactly one overlapping one-way platform to ignore on down-plus-jump', () => {
+    const trialPerch = SHADOW_TESTING_GROUND.platforms.find((platform) => platform.id === 'trial-perch');
+    if (trialPerch === undefined) throw new Error('Missing trial-perch');
     const body = createFakeBody({
       x: 632,
-      y: 488,
+      y: trialPerch.y - 52,
       blockedDown: true
     });
 

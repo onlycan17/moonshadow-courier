@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getMonster, getMonsterSpawns } from '../../src/game/data/monster-catalog';
+import { getMap } from '../../src/game/maps/map-registry';
+import { MAP_IDS } from '../../src/game/maps/types';
 
 describe('monster catalog', () => {
   it('spawns four green mushrooms in the starter hunting map', () => {
@@ -19,5 +21,13 @@ describe('monster catalog', () => {
     expect(getMonsterSpawns('cuning-city')).toEqual([]);
     expect(getMonsterSpawns('bandit-hideout')).toEqual([]);
     expect(getMonsterSpawns('endurance-forest')).toEqual([]);
+  });
+
+  it('places every ground enemy on the map visual ground', () => {
+    for (const mapId of MAP_IDS) {
+      const groundY = getMap(mapId).groundY;
+
+      expect(getMonsterSpawns(mapId).every((spawn) => spawn.y === groundY), mapId).toBe(true);
+    }
   });
 });

@@ -516,7 +516,7 @@ export class GameplayScene extends Phaser.Scene {
       });
     }
 
-    this.spawnEnemies(runtime, map.id);
+    this.spawnEnemies(runtime, map);
     this.createCombatHud(runtime);
 
     const positionSaveTimer = this.time.addEvent({
@@ -691,11 +691,11 @@ export class GameplayScene extends Phaser.Scene {
     this.spawnSkillProjectiles(runtime, 'basic-shuriken', this.transformed ? 62 : definition.baseDamage, Math.max(1, this.character.skills['basic-shuriken'] ?? 0), definition.usesWeapon, definition.projectileCount, definition.maxTargets, x, y, direction);
   }
 
-  private spawnEnemies(runtime: MapRuntime, mapId: MapId): void {
+  private spawnEnemies(runtime: MapRuntime, map: MapDef): void {
     const activeExam = this.profileExtension?.quests.jobExam;
-    const spawns: readonly MonsterSpawn[] = mapId === 'shadow-testing-ground' && activeExam?.status === 'active' && activeExam.job === 'novice'
-      ? [420, 570, 720, 870, 1020].map((x, index) => ({ id: `exam-mushroom-${index + 1}`, monsterId: 'green-mushroom' as const, x, y: 660, patrolRadius: 55 }))
-      : getMonsterSpawns(mapId);
+    const spawns: readonly MonsterSpawn[] = map.id === 'shadow-testing-ground' && activeExam?.status === 'active' && activeExam.job === 'novice'
+      ? [420, 570, 720, 870, 1020].map((x, index) => ({ id: `exam-mushroom-${index + 1}`, monsterId: 'green-mushroom' as const, x, y: map.groundY, patrolRadius: 55 }))
+      : getMonsterSpawns(map.id);
     for (const spawn of spawns) {
       const definition = getMonster(spawn.monsterId);
       const visualAsset = getMonsterVisualAsset(definition.id);
@@ -1162,7 +1162,7 @@ export class GameplayScene extends Phaser.Scene {
     };
     gameplayWindow.render_game_to_text = () => JSON.stringify({
       coordinateSystem: 'origin top-left, x right, y down',
-      map: this.currentMap === null ? null : { id: this.currentMap.id, width: this.currentMap.width, height: this.currentMap.height },
+      map: this.currentMap === null ? null : { id: this.currentMap.id, width: this.currentMap.width, height: this.currentMap.height, groundY: this.currentMap.groundY },
       background: this.currentMap === null ? null : { width: this.currentMap.width, height: this.currentMap.height, followsCamera: true },
       camera: { scrollX: Math.round(this.cameras.main.scrollX), scrollY: Math.round(this.cameras.main.scrollY), playfieldBottom: HUD_TOP },
       player: this.player === null || this.character === null ? null : { x: Math.round(this.player.x), y: Math.round(this.player.y), state: this.player.getState(), hp: this.character.hp, mp: this.character.mp, level: this.character.level, job: this.character.job, transformed: this.transformed },

@@ -53,9 +53,11 @@ describe('portal rules', () => {
 describe('platform and rope rules', () => {
   it('finds only the overlapping one-way platform for drop-through', () => {
     const testingGround = getMap('shadow-testing-ground');
+    const trialPerch = testingGround.platforms.find((platform) => platform.id === 'trial-perch');
+    if (trialPerch === undefined) throw new Error('Missing trial-perch');
 
-    expect(findDropThroughPlatform(650, 540, testingGround)?.id).toBe('trial-perch');
-    expect(findDropThroughPlatform(900, 540, testingGround)).toBeNull();
+    expect(findDropThroughPlatform(650, trialPerch.y, testingGround)?.id).toBe('trial-perch');
+    expect(findDropThroughPlatform(900, trialPerch.y, testingGround)).toBeNull();
     expect(findDropThroughPlatform(650, testingGround.groundY, testingGround)).toBeNull();
   });
 
@@ -80,6 +82,15 @@ describe('spawn resolution', () => {
     const city = getMap('cuning-city');
 
     expect(resolveSpawn(city, { x: 300, y: 500 })).toEqual({ x: 300, y: 500 });
+  });
+
+  it('snaps legacy saved positions below the walkable ground back onto the ground', () => {
+    const city = getMap('cuning-city');
+
+    expect(resolveSpawn(city, { x: 300, y: city.groundY + 60 })).toEqual({
+      x: 300,
+      y: city.groundY
+    });
   });
 
   it('falls back to defaultSpawn for invalid or out-of-bounds saved positions', () => {

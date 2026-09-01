@@ -120,5 +120,5 @@ export function resolveSpawn(map: MapDef, saved?: { x: number; y: number } | nul
     return { ...map.defaultSpawn };
   }
 
-  return { x: saved.x, y: saved.y };
+  return { x: saved.x, y: Math.min(saved.y, map.groundY) };
 }
