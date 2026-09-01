@@ -32,6 +32,8 @@ export function attachErrorGuards(page: Page): string[] {
   });
 
   page.on('pageerror', (error) => {
+    // WebKit은 reload가 취소한 로컬 이미지 요청을 pageerror/CORS 오류로 보고한다.
+    if (isCancelledLocalAssetLoad(error.message)) return;
     problems.push(`pageerror: ${error.message}`);
   });
 
@@ -44,6 +46,10 @@ export function attachErrorGuards(page: Page): string[] {
   });
 
   return problems;
+}
+
+function isCancelledLocalAssetLoad(message: string): boolean {
+  return /^\/127\.0\.0\.1:\d+\/assets\/.+ due to access control checks\.$/.test(message);
 }
 
 export async function openIntroPage(page: Page, navigate = true): Promise<void> {
