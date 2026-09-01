@@ -132,26 +132,24 @@ export function readActiveLevel(page: Page): Promise<string | undefined> {
 
 /** 포탈 중심 좌표까지 걸어간 뒤 방향키를 놓는다. 화면 타이밍 대신 data-player-x로 판단한다. */
 export async function walkUntilX(page: Page, targetX: number, direction: 'left' | 'right'): Promise<void> {
-  const key = direction === 'right' ? 'ArrowRight' : 'ArrowLeft';
-  await page.keyboard.down(key);
+  const deadline = Date.now() + WALK_TIMEOUT_MS;
+  let moveDirection = direction;
 
-  try {
-    await page.waitForFunction(
-      ({ target, move }) => {
-        const raw = document.body.dataset.playerX;
-        if (raw === undefined) {
-          return false;
-        }
+  while (Date.now() < deadline) {
+    const currentX = await readPlayerX(page);
+    const distance = targetX - currentX;
+    if (Math.abs(distance) <= 12) return;
 
-        const x = Number(raw);
-        return move === 'right' ? x >= target : x <= target;
-      },
-      { target: targetX, move: direction },
-      { timeout: WALK_TIMEOUT_MS }
-    );
-  } finally {
+    moveDirection = distance > 0 ? 'right' : 'left';
+    const key = moveDirection === 'right' ? 'ArrowRight' : 'ArrowLeft';
+    const burstMs = Math.abs(distance) > 120 ? 180 : 70;
+    await page.keyboard.down(key);
+    await page.waitForTimeout(burstMs);
     await page.keyboard.up(key);
+    await page.waitForTimeout(70);
   }
+
+  throw new Error(`Timed out walking ${moveDirection} toward x=${targetX}`);
 }
 
 /** `↑` 상호작용. 엔진이 JustDown으로 읽을 수 있도록 down/up 사이에 간격을 둔다(SPEC §6.2). */
