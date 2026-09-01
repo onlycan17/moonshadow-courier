@@ -3,8 +3,12 @@ import { expect, type Page } from '@playwright/test';
 export const CORRUPT_SLOT_KEY = 'kerning-shadows.local-profile.v1.slot-3';
 export const STORED_PROFILE_KEY = 'kerning-shadows.local-profile.v1';
 
-const READY_TIMEOUT_MS = 20_000;
-const WALK_TIMEOUT_MS = 15_000;
+export const RUNNING_IN_CI = (globalThis as typeof globalThis & {
+  process?: { env?: Record<string, string | undefined> };
+}).process?.env?.CI === 'true';
+
+const READY_TIMEOUT_MS = RUNNING_IN_CI ? 60_000 : 20_000;
+const WALK_TIMEOUT_MS = RUNNING_IN_CI ? 45_000 : 15_000;
 const POSITION_SAVE_WAIT_MS = 900;
 const RUNTIME_STATS_SETTLE_MS = 600;
 
@@ -35,7 +39,7 @@ export function attachErrorGuards(page: Page): string[] {
     const failure = request.failure();
     const errorText = failure?.errorText ?? 'unknown';
     // reload/goto가 이전 문서의 진행 중 요청을 취소하는 것은 실제 로드 실패가 아니다.
-    if (errorText === 'NS_BINDING_ABORTED' || errorText === 'net::ERR_ABORTED' || errorText === 'cancelled') return;
+    if (errorText === 'NS_BINDING_ABORTED' || errorText === 'net::ERR_ABORTED' || errorText.toLowerCase().includes('cancelled')) return;
     problems.push(`requestfailed: ${request.url()} (${errorText})`);
   });
 

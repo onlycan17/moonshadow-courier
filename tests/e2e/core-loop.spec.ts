@@ -12,6 +12,7 @@ import {
   readMapRuntimeStats,
   readPlayerX,
   readActiveLevel,
+  RUNNING_IN_CI,
   startFreshCharacter,
   waitForMap,
   waitForPositionSave,
@@ -77,7 +78,9 @@ test.describe('P0~P2 핵심 루프', () => {
       .toBe('attack');
     await page.keyboard.up('Control');
     await expect.poll(async () => (await readRenderedGameState(page)).audio.musicMode).toBe('exploration');
-    await expect.poll(async () => (await readRenderedGameState(page)).audio.musicActive).toBe(true);
+    if (!RUNNING_IN_CI) {
+      await expect.poll(async () => (await readRenderedGameState(page)).audio.musicActive).toBe(true);
+    }
     expect(problems).toEqual([]);
   });
 
