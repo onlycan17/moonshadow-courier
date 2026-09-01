@@ -73,9 +73,7 @@ test.describe('P0~P2 핵심 루프', () => {
 
     await page.keyboard.down('Control');
     await page.waitForTimeout(80);
-    await expect
-      .poll(() => page.evaluate(() => document.body.dataset.playerState))
-      .toBe('attack');
+    await expectBasicAttackFeedback(page);
     await page.keyboard.up('Control');
     await expect.poll(async () => (await readRenderedGameState(page)).audio.musicMode).toBe('exploration');
     if (!RUNNING_IN_CI) {
@@ -240,6 +238,16 @@ async function readRenderedGameState(page: import('@playwright/test').Page): Pro
     if (render === undefined) throw new Error('render_game_to_text is not installed');
     return JSON.parse(render()) as RenderedGameState;
   });
+}
+
+async function expectBasicAttackFeedback(page: import('@playwright/test').Page): Promise<void> {
+  if (RUNNING_IN_CI) {
+    // 저속 러너에서는 짧은 attack 상태가 폴링 사이에 끝날 수 있어 영속적인 발사 기록을 확인한다.
+    await expect.poll(async () => (await readRenderedGameState(page)).effects.lastSkill).toBe('basic-shuriken');
+    return;
+  }
+
+  await expect.poll(() => page.evaluate(() => document.body.dataset.playerState)).toBe('attack');
 }
 
 test.describe('P3~P7 전투와 메뉴 루프', () => {
@@ -431,7 +439,7 @@ test.describe('P7 모바일 터치 조작', () => {
     await attack.dispatchEvent('pointerdown', { pointerId: 1 });
     await page.waitForTimeout(90);
     await attack.dispatchEvent('pointerup', { pointerId: 1 });
-    await expect.poll(() => page.evaluate(() => document.body.dataset.playerState)).toBe('attack');
+    await expectBasicAttackFeedback(page);
 
     await page.waitForTimeout(420);
     const menu = touchControls.getByRole('button', { name: 'MENU' });
