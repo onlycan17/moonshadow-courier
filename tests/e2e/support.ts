@@ -75,14 +75,14 @@ export async function createCharacter(page: Page, nickname: string): Promise<voi
   await submit.click();
 }
 
-export async function enterGameplay(page: Page, slot: number): Promise<void> {
+export async function enterGameplay(page: Page, slot: number, expectedMap = 'cuning-city'): Promise<void> {
   const panel = page.getByRole('dialog', { name: '캐릭터 선택' });
   await expect(panel).toBeVisible({ timeout: READY_TIMEOUT_MS });
 
   await panel.locator(`[data-slot-index="${slot}"]`).click();
   await panel.getByRole('button', { name: '진입' }).click();
 
-  await waitForMap(page, 'cuning-city');
+  await waitForMap(page, expectedMap);
   await expect(page.locator('canvas')).toBeFocused({ timeout: READY_TIMEOUT_MS });
 }
 
